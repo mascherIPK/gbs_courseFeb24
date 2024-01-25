@@ -22,7 +22,7 @@ image::GBStutorial_flowchart.jpeg[scaledwidth="75%", align=center]
 
 == Open a UNIX shell
 
-. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server slurm-01.ipk-gatersleben.de.
+. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server [red]#slurm-01.ipk-gatersleben.de#.
 
 . Obtain a Kerberos ticket to access our filer resources.
 +
@@ -44,29 +44,6 @@ pwd
 ls
 ----
 
-////
-. Obtain a Kerberos ticket and allocate an interactive session with https://slurm.schedmd.com/salloc.html[salloc].
-+
-[source,sh]
-----
-kinit
-auks -a
-#change cpu to queue for students
-salloc --auks=yes -p gpu -c 4 --mem 20G // <1>
-hostname // <2>
-----
-<1> We allocate a session 4 CPU cores and 20 GB of main memory.
-<2> Check that you are on one of the SLURM compute nodes.
-. https://stanford-rc.github.io/docs-earth/docs/slurm-basics[SLURM] is widely used scheduling system. 
-A brief documenation is available https://slurm-web.ipk-gatersleben.de/wiki/doku.php?id=start[here], 
-and here's an even shorter https://slurm-web.ipk-gatersleben.de/wiki/lib/exe/fetch.php?media=slurm:slurm_flyer.pdf[cheat sheet].
-+
-IMPORTANT: Login nodes are not for computing!
-+
-////
-
-
-
 == Set up your analysis directory  ==
 
 . Let's have a look at the GBS data.
@@ -80,19 +57,12 @@ ls -lhS gbs_reads | less <1>
 man ls
 cd gbs_reads
 ls | wc -l
-zcat Morex.fastq.gz | less -S // <2>
+zcat HOR_337.fastq.gz | less -S // <2>
 cd ..
 du -ch gbs_reads
 ----
 <1> To close `less`, press `q`.
 <2> The reads are in https://en.wikipedia.org/wiki/FASTQ_format[FASTQ format].
-
-. Take a look at the phenotypes. There are two. One is binary: lateral spikelet fertility (commonly referred to in barley as row type). The other is quantitative (plant height).
-+
-[source,sh]
-----
-less MxB_92_RILs_phenotypes.csv
-----
 
 . Create your working directory and change into it.
 +
@@ -115,9 +85,6 @@ datadir="/filer/projekte/gbs_course/data/"
 ln -s $datadir/gbs_reads/*fastq.gz gbs_reads
 ls -l gbs_reads | less -S
 ls gbs_reads | wc -l 
-
-ln -s $datadir/MxB_92_RILs_phenotypes.csv
-
 ----
 <1> Check that you are in your working directory (`/filer/projekte/gbs_course/USER/gbs`).
 
@@ -125,7 +92,7 @@ ln -s $datadir/MxB_92_RILs_phenotypes.csv
 +
 [source,r]
 ----
-zcat gbs_reads/Morex.fastq.gz | wc -l > Morex.len
+zcat gbs_reads/HOR_337.fastq.gz | wc -l > HOR_337.len.txt
 
 for i in gbs_reads/*fastq.gz; do
  name=`basename $i | cut -d . -f 1`
@@ -161,10 +128,10 @@ bwa shm -l
 +
 [source,sh]
 ----
-zcat gbs_reads/Morex.fastq.gz | head -n 40000 > Morex_10k.fastq
-bwa mem $ref Morex_10k.fastq > Morex_10k.sam <1>
-samtools sort Morex_10k.sam > Morex_10k.bam <1>
-samtools view Morex_10k.bam | less -S
+zcat gbs_reads/HOR_337.fastq.gz | head -n 40000 > HOR_337_10k.fastq
+bwa mem $ref HOR_337_10k.fastq > HOR_337_10k.sam <1>
+samtools sort HOR_337_10k.sam > HOR_337_10k.bam <1>
+samtools view HOR_337_10k.bam | less -S
 ----
 <1> Alignments are stored in the https://en.wikipedia.org/wiki/SAM_(file_format)[Sequence Alignment Map format] (SAM) or its binary equivalent BAM.
 
@@ -172,7 +139,7 @@ samtools view Morex_10k.bam | less -S
 +
 [source,sh]
 ----
-bwa mem $ref Morex_10k.fastq | samtools sort > Morex_10k.bam
+bwa mem $ref HOR_337_10k.fastq | samtools sort > HOR_337_10k.bam
 ----
 
 . Open a new PuTTY session. Start https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/[tmux] to keep your commands running in the background. 
@@ -205,7 +172,7 @@ for i in gbs_reads/*fastq.gz; do
  bwa mem -t 4 $ref $i | samtools sort > $name.bam
 done 2> bwa.err <2>
 ----
-<1> Strip the extension: Morex.fastq.gz become Morex.
+<1> Strip the extension: HOR_337.fastq.gz become HOR_337.
 <2> To detach the tmux session, press kbd:[Ctrl-B] followed by kbd:[D]. 
 
 +
@@ -301,30 +268,20 @@ $filter --vcf $vcf --dphom 2 --dphet 4 --minmaf 0.2 --minpresent 0.9 --minhomp 0
 <1> Path to pre-computed VCF file.
 <2> We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozyous calls are discarded.
 
-. Change the column names of the VCF files to match the row names in the phenotype table.
-+
-[source,sh]
-----
-less MxB_92_RILs_phenotypes.csv
-bcftools query -l bcftools_SNP_calling_filtered.vcf | less -S
-bcftools query -l $fvcf | cut -d / -f 2 | cut -d . -f 1 > new_sample_names.txt
-bcftools reheader -s new_sample_names.txt $fvcf > bcftools_SNP_calling_filtered_newNames.vcf
-----
-
 . Review the VCF file.
 +
 [source,sh]
 ----
-grep -v '^##' bcftools_SNP_calling_filtered_newNames.vcf | column -t | less -S
+grep -v '^##' bcftools_SNP_calling_filtered.vcf | column -t | less -S
 ----
 
-== Import the genetic variant matrix into R
+== Principal component analysis
 
-. Start R. 
+. Open R. 
 +
 [source,sh]
 ----
-module load R/4.1.1
+module load R/3.5.1
 R 
 ----
 
@@ -334,400 +291,100 @@ R
 +
 [source,r]
 ----
-.libPaths("/filer/projekte/gbs_course/Rlibs/4.1.1") // <1>
+.libPaths(c("/filer-dg/agruppen/seq_shared/mascher/Rlib/3.5.1", "/opt/Bio/R_LIBS/3.5.1")) // <1>
 
-library("qtl") // <2>
-library("ASMap") // <3> 
-library("utl") // <4>
+library(data.table) // <2>
+library(SeqArray) // <3>
+library(SNPRelate) // <3>
+library(countrycode) // <4>
+
 ----
-<1> Set the path where the R libraries are located.
-<2> https://rqtl.org[R/qtl] is package for QTL mapping. Several tutorials are available https://rqtl.org/tutorials/[here].
-<3> https://cran.r-project.org/web/packages/ASMap/ASMap.pdf[R/ASMap] is package for linkage map constuction. It implements the https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000212[MSTMAP] algorithm.
-A detailed tutorial is available https://cran.r-project.org/web/packages/ASMap/vignettes/asmapvignette.pdf[here].
-<4> https://github.com/gact/utl[utl] provides utility functions for R/qtl, one of which we use to convert VCF to R/qtl format.
+<1> Set the paths where the R libraries are located.
+<2> https://cran.r-project.org/web/packages/data.table/index.html[data.table] extends R core functionality when handling large tables
+<3> Shttps://academic.oup.com/bioinformatics/article/33/15/2251/3072873[seqArray] and https://academic.oup.com/bioinformatics/article/28/24/3326/245844[SNPRelate] are two R packages to store and analyze SNP matrices.
+<4> The countrycode package will be used to make country abbreviations to geographic regions.
 
-. Convert the VCF to R/qtl format. Example files are found https://rqtl.org/sampledata/[here]. 
+. Convert the VCF file to the binary GDS (Genomic Data Structure) format used by seqArray and SNPRelate.
 +
 [source,r]
 ----
-vcf <- 'bcftools_SNP_calling_filtered_newNames.vcf'
-ids <- read.table("new_sample_names.txt", head=F)[, 1]
-genfile <- 'bcftools_SNP_calling_geno.csv'
-founders <- c("Morex", "Barke")
-samples <- setdiff(ids, founders)
-
-convert_vcf_to_genfile(vcf, genfile, samples, founders) // <1>
+seqVCF2GDS(vcf.fn='bcftools_SNP_calling_filtered.vcf', out.fn='bcftools_SNP_calling_filtered.gds') // <1>
 ----
-<1> This function writes a text file in R/qtl's "csvs" format to disk. The output filename is `genfile`. 
+<1> This creates the GDS file in the current working directory.
 
-. The conversion function does not take genomic coordinates into account, so markers are ordered correctly, but equidistant. We add a line to the CSV file to correct this.
+. Open the GDS file and get summary statistics.
 +
 [source,r]
 ----
-cmd <- "sed -Ei '1{p; s/id|chr.H://g; h; d}; 2G'" // <1>
-paste(cmd, genfile) |> system() // <2><3>
+seqOpen('bcftools_SNP_calling_filtered.gds') -> gds
+seqSummary(gds)
 ----
-<1> The https://www.gnu.org/software/sed/manual/sed.html#Introduction[sed] command retrieves the genomic coordinates from the first line and inserts them as a new line after line 2.
-This could also be achieved with a text editor. The command, at the cost of arcanity, forgoes error-prone manual editing.
-<2> The `sed` command is called from inside R and modifies the file in place. 
-<3> Alternatively, you write this command as `system(paste(cmd, genfile))`. Before R version 4.0 (or so), this was the only way to do it. The pipe-like syntax is a recent addition to R.
 
-. Read the genotype and phenotype data into an R/qtl cross object.
+. Run the a principal components analysis (PCA) on the data and extract the eigenvectors.
 +
 [source,r]
 ----
-pheno <- 'MxB_92_RILs_phenotypes.csv'
-read.cross(format="csvs", genfile=genfile, phefile=pheno, crosstype= "f2",  genotypes=c("AA","AB","BB")) -> mxb
-convert2bcsft(mxb, BC.gen=0, F.gen=8,  estimate.map=F) -> mxb // <1>
-summary(mxb) 
-summary.map(mxb)
-----
-<1> A population of recombinant inbred lines is read in as "f2". `convert2bcsft()` is used to set the correct number of selfing generations.  See https://cran.r-project.org/web/packages/qtl/vignettes/bcsft.pdf[the documentation] of that function.  We disable the `estimate.map` option because we will rely on R/ASMap to construct a genetic linkage map. 
+snpgdsPCA(gds, autosome.only=F) -> pca // <1>
 
-. R/qtl offers several functions to extract basic information from "cross" objects.
+data.table(pca$sample.id, pca$eigenvect[, 1:2]) -> ev
+setnames(ev, c("accession", "PC1", "PC2")) // <2>
+ev[, accession := sub(".bam$", "", sub(".*/", "", accession))] // <3>
+----
+<1> `autosome.only-F` is needed because chromsomes are named chr1H, chr2H ... instead of 1, 2, ...
+<2> Set proper column names.
+<3> Change the sample names inherited from the VCF file (BAM file names).
+
+. Read the passport data for the core200 panel and merge them the PCA results.
 +
 [source,r]
 ----
-nind(mxb) # number of individuals
-nchr(mxb) # number of chromosomes (actually linkage groups)
-totmar(mxb) # total number of markers
-nmar(mxb) # number of markers per chromosome
-nphe(mxb) # number of phenotypes
+data.table(read.xlsx("/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx")) -> pp
+pp[ev, on="accession"] -> ev
 ----
 
-. Plot a summary of the phenotypes. Copy the PDF file with https://winscp.net/eng/download.php[WinSCP] and take a look at it with the Acrobat Reader.
+. Plot the first two principal components (PCs) with samples coloured by row type.
 +
 [source,r]
 ----
-pdf("plot_pheno.pdf") <1>
-plotPheno(mxb, pheno.col=1, xlab="phenotypes")
-plotPheno(mxb, pheno.col=2)
-dev.off() <2>
-----
-<1> Open a PDF file to plot to. The file is created in the current working directory.
-<2> Close the file (switch *off* the plotting *device*). Don't forget to call `dev.off()`. Otherwise the PDF file will be empty or invalid.
+ev[, col := "gray"] // <1>
+ev[row_type == "6-rowed", col := "black"] // <2>
+ev[row_type == "2-rowed", col := "red"]
 
-. Change the scale of the linkage map from base pairs to megabase pairs and plot the distribution of markers along chromosomes.
+pdf("PCA1.pdf") // <3>
+ev[, plot(PC1, PC2, col=col, pch=19, xlab="PC1", ylab="PC2")] // <4>
+dev.off() // <3>
+----
+<1> Add a color column. The default color is gray.
+<2> If the the row type is six-rowed, set the color to black.
+<3> Open a PDF file as the plot device and close it after the plot function has been called.
+<4> `pch` specifies the http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r[plotting symbol]. 19 means solid circles.
+
+. Repeat with samples colored by annual growth habit.
 +
 [source,r]
 ----
-rescalemap(mxb, 1/1e6) -> mxb
-summary.map(mxb)
+ev[, col2 := "gray"]
+ev[annual_growth_habit == "spring", col2 := "black"]
+ev[annual_growth_habit  == "winter", col2 := "red"]
 
-pdf("plot_map.pdf")
-plot.map(mxb, main="Physical map", ylab="Location (Mb)")
-dev.off()
-----
-
-. Create a copy of the cross object with the physical map for later comparison.
-+
-[source,r]
-----
-copy(mxb) -> mxb_physical
-saveRDS(mxb_physical, "mxb_physical.Rds") // <1>
-readRDS("mxb_physical.Rds") -> mxb_physical 
-----
-<1> Any R object can be saved to and read from disk, respectively, with `saveRDS()` and `readRDS().`  
-
-== Quality control and linkage map construction ==
-
-. Karl Broman https://rqtl.org/tutorials/geneticmaps.pdf[pointed out] that a reference genome sequence 
-has obviated the need for linkage map construction in mouse;
-the same applies to barley. 
-Although marker order is known, constructing a linkage map from scratch is a means of quality control. 
-If there are issues with the data, the genetic map will be off the mark.
-
-. A map off the cuff is not too bad. The only worry is that it's about a fifth longer than expected.
-+
-[source,r]
-----
-summary.map(mstmap(mxb, id="id"))
-----
-
-. Let's see if we can do better. The usual suscepts are bad markers and odd individuals.
-
-. Remove duplicated markers. If there are groups of markers that differ only in their patterns of missing data, keep only one representative.
-+
-[source,r]
-----
-findDupMarkers(mxb, exact.only=FALSE) -> dups // <1>
-unlist(dups) |> length()
-
-mxb <- drop.markers(mxb, unlist(dups))
-summary(mxb)
-----
-<1> exact.only=FALSE ignores differences in missingness.
-
-. Remove duplicated individuals.
-+
-[source,r]
-----
-cg <- comparegeno(mxb)
-
-pdf("compare_geno.pdf")
-hist(cg[lower.tri(cg)], breaks=seq(0, 1, len=101), xlab="No. matching genotypes")
+pdf("PCA2.pdf")
+ev[, plot(PC1, PC2, col=col2, pch=19, xlab="PC1", ylab="PC2")]
 dev.off()
 
-summary(cg, thresh=0.9) -> dups
-subset(mxb, ind=setdiff(samples, dups$ind2)) -> mxb
 ----
 
-. Have a look at the https://link.springer.com/article/10.1007/BF00292322[graphical genotypes].
+. Read the passport data for the core200 panel and merge them the PCA results.
 +
 [source,r]
 ----
-pdf("plot.geno.pdf")
-geno.image(mxb, col=c("white", "red", "violet", "blue")) // <1>
-dev.off()
+data.table(read.xlsx("/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx")) -> pp
+pp[ev, on="accession"] -> ev
 ----
-<1> The default colors are red and green, which puts color blind people at a disadvantage. In this case, the genotypes AA, BB, AB are displayed in the colors red, blue, and violet, respectively. Missing data will be displayed in white.
-
-. We remove the odd individuals with lots of missing calls.
+. Read the passport data for the core200 panel and merge them the PCA results.
 +
 [source,r]
 ----
-ntyped(mxb) |> sort() |> head(n=1) -> rm.ind
-
-subset(mxb, ind=setdiff(names(ntyped(mxb)), names(rm.ind))) -> mxb // <1>
-summary(mxb)
+data.table(read.xlsx("/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx")) -> pp
+pp[ev, on="accession"] -> ev
 ----
-<1> `ntyped(mxb) |> names()` outputs a list of all individuals.
-
-. Thin the set of markers.
-+
-[source,r]
-----
-set.seed(1) // <1>
-lapply(pull.map(mxb), function(i) pickMarkerSubset(i, 1)) |> unlist() -> keep
-
-drop.markers(mxb, setdiff(markernames(mxb), keep))  -> mxb
-----
-<1> Markers are picked at random to have one per megabase. To ensure you always get the results, set the https://en.wikipedia.org/wiki/Random_seed[seed] for random number generator. 
-
-. Look at the graphical genotypes again.
-+
-[source,r]
-----
-pdf("plot.geno_1Mb.pdf")
-geno.image(mxb, col=c("white", "red", "violet", "blue"))
-dev.off()
-----
-
-. Construct the map again.
-+
-[source,r]
-----
-mstmap.cross(mxb, id="id") -> mxb
-summary.map(mxb)
-----
-
-. Align the genetic to the physical map.
-+
-[source,r]
-----
-pdf("align_maps.pdf")
-alignCross(mxb, maps=list(mxb_physical), layout=c(1,1))
-dev.off()
-----
-
-. Compute the rank correlation.
-+
-[source,r]
-----
-pull.map(mxb, as.table=T) -> a
-pull.map(mxb_physical, as.table=T) -> b
-merge(a, b, by=0) -> m // <1>
-sapply(split(m, m$chr.x), function(i) with(i, cor(pos.x, pos.y, method='s'))) -> cc // <2>
-----
-<1> `by=0` means: merge by row names.
-<2> Use `method = 'p'` to compute the Pearson (linear) correlation.
-
-. Flip those linkage groups that are inverted relative to the reference orientation (short arm first). 
-+
-[source,r]
-----
-names(which(cc < 0)) -> flip.chr
-flip.order(mxb, flip.chr) -> mxb
-----
-+
-. Plot the updated alignment and graphical genotypes.
-+
-[source,r]
-----
-pdf("align_maps_2.pdf")
-alignCross(mxb, maps=list(mxb_physical), layout=c(1,1))
-dev.off()
-
-pdf("plot.geno.mstmap.pdf")
-geno.image(mxb, col=c("white", "red", "violet", "blue"))
-dev.off()
-----
-
-. Compare genetic and physical map with connector plots.
-+
-[source,r]
-----
-rescalemap(mxb_physical, 1/5) -> mxb_physical // <1>
-
-pdf("plot_map_2.pdf")
-plotMap(mxb, mxb_physical)
-dev.off()
-----
-<1> Divide chromosome lengths by 5.
-
-. Save the genetic map object.
-+
-[source,r]
-----
-mxb -> mxb_genetic
-saveRDS(mxb_genetic, file="mxb_genetic.Rds")
-----
-
-== Trait mapping
-
-. Load the required package and the data.
-+
-[source,r]
-----
-.libPaths("/filer/projekte/gbs_course/Rlibs/4.1.1") // <1>
-
-library("qtl") 
-readRDS("mxb_genetic.Rds") -> mxb
-----
-
-. Calculate https://smcclatchy.github.io/mapping/03-calc-genoprob/[genotype probabilities] conditional on the marker data.
-+
-[source,r]
-----
-calc.genoprob(mxb) -> mxb
-----
-
-. Run the "QTL" scan for the first phenotypes, row type.
-+
-[source,r]
-----
-mxb$pheno$row_type <- ifelse(mxb$pheno$row_type == 2, 0, 1) // <1> 
-
-scanone(mxb, pheno.col=1, method="mr", model="binary") -> out // <2>
-summary(out)
-
-pdf("plot_row_type.pdf") // <3>
-plot(out)
-dev.off()
-----
-<1> Values for binary traits have to be zero or one.
-<2> Perform a single-QTL genome scan using the https://link.springer.com/article/10.1007/BF00223708[marker regression] (mr) method.
-https://www.rdocumentation.org/packages/qtl/versions/1.47-9/topics/scanone[scanone()] supports several other methods and models. The defaut is "normal" for a quantiative phenotype.
-<3> Plot the LOD (logarithm of the odds) scores along the genome.
-
-. Run a https://smcclatchy.github.io/mapping/06-perform-perm-test/[permutation test] to get p-values and a significance threshold.
-+
-[source,r]
-----
-operm <- scanone(mxb, method="mr", n.perm=1000, pheno.col=1) 
-
-summary(operm, alpha=c(0.05, 0.2))
-
-pdf("plot_operm.pdf") <1>
-hist(as.numeric(operm))
-abline(v=summary(operm, alpha=c(0.05)), col='red')
-dev.off()
-
-summary(out, perms=operm, pvalues=TRUE)
-
-pdf("plot_row_type_threshold.pdf")
-plot(out)
-abline(h=3.5, col='red') // <2>
-dev.off()
-----
-<1> Plot a histogram of the maximum genome-wide LOD scores from the 1000 permutations.
-<2> Add the significance threshold.
-
-. Get interval estimates.
-+
-[source,r]
-----
-lodint(out, chr="2H", drop=2)
-----
-
-. Plot the phenotypes against the genotypes at the most highly associated marker (genotype x phenotpe, pxg).
-+
-[source,r]
-----
-rownames(max(out)) -> mar
-pdf("plot_pxg.pdf")
-plotPXG(mxb, pheno.col=1, marker=mar)
-dev.off()
-----
-
-. To close R, type `quit()`. To close the tmux session, type `exit`. This will finish the tmux session. If you just want to detach and keep the session running, use `tmux detach`.
-
-. Check by BLAST how close the top marker is to the https://www.pnas.org/doi/10.1073/pnas.0608580104[causal gene] (_VRS1_). The sequence is available from https://www.ncbi.nlm.nih.gov/nuccore/MF776946.1[GenBank].
-GrainGenes offers https://wheat.pw.usda.gov[a web-based BLAST].
-
-== Mapping the KASP markers
-
-. Load the required libraries.
-+
-[source,r]
-----
-.libPaths("/filer/projekte/gbs_course/Rlibs/4.1.1") 
-library(data.table)
-library(xlsx)
-library("qtl") 
-----
-
-. Add the KASP results to the phenotypes table.
-+
-[source,r]
-----
-fread('MxB_92_RILs_phenotypes.csv')->p
-
-data.table(read.xlsx('/filer-dg/agruppen/dg6/mascher/DG/mxb_course_221201/prep/KASP_results_PGR23.xlsx', 1))->k
-setnames(k, "Samples", "id")
-k[grepl("F11$", id)][, id := sub("MBRIL-", "07-", sub("_F11$", "", id))][] -> k
-
-k[p, on="id"] -> m
-m[, .(row_type, plant_height, RAW1_Henry, VRS1_Henry, RAW1_ZsaZsa, VRS1_ZsaZsa, RAW1_Tania, VRS1_Tania, id)] -> m
-
-unique(m[, .(row_type, VRS1_Tania)])
-----
-
-. Modify the `mxb` object.
-+
-[source,r]
-----
-readRDS('mxb_genetic.Rds')
-
-data.frame(m[id %in% mxb$pheno$id]) -> mxb$pheno
-mxb
-colnames(mxb$pheno)
-----
-
-. Plot the new "phenotypes".
-+
-[source,r]
-----
-pdf("plot_KASP.pdf")
-plotPheno(mxb, pheno.col=3)
-plotPheno(mxb, pheno.col=4)
-plotPheno(mxb, pheno.col=5)
-plotPheno(mxb, pheno.col=6)
-plotPheno(mxb, pheno.col=7)
-plotPheno(mxb, pheno.col=8)
-dev.off()
-----
-
-. Map VRS1_Tania.
-+
-[source,r]
-----
-mxb$pheno$VRS1_Tania <- ifelse(mxb$pheno$VRS1_Tania == "C", 0, 1)
-scanone(mxb, pheno.col=8, method="mr", model="binary") -> out
-
-pdf("plot_VRS1_Tania.pdf")
-plot(out)
-dev.off()
-----
-
 
