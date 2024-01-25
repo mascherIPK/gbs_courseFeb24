@@ -1126,7 +1126,7 @@ bcftools mpileup <span class="nt">--skip-indels</span> <span class="nt">--fasta-
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Start R.</p>
+<p>Open R.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh">module load R/3.5.1
@@ -1235,6 +1235,74 @@ R</code></pre>
 </div>
 </div>
 </li>
+<li>
+<p>Plot the first two principal components (PCs) with samples coloured by row type.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="r"><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"gray"</span><span class="p">]</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="n">ev</span><span class="p">[</span><span class="n">row_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"6-rowed"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">]</span><span class="w"> <i class="conum" data-value="2"></i><b>(2)</b>
+</span><span class="n">ev</span><span class="p">[</span><span class="n">row_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"2-rowed"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"red"</span><span class="p">]</span><span class="w">
+
+</span><span class="n">pdf</span><span class="p">(</span><span class="s2">"PCA1.pdf"</span><span class="p">)</span><span class="w"> <i class="conum" data-value="3"></i><b>(3)</b>
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="4"></i><b>(4)</b>
+</span><span class="n">dev.off</span><span class="p">()</span><span class="w"> <i class="conum" data-value="3"></i><b>(3)</b>
+</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add a color column. The default color is gray.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If the the row type is six-rowed, set the color to black.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Open a PDF file as the plot device and close it after the plot function has been called.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>pch</code> specifies the <a href="http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r">plotting symbol</a>. 19 means solid circles.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Repeat with samples colored by annual growth habit.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="r"><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">col2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"gray"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">annual_growth_habit</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"spring"</span><span class="p">,</span><span class="w"> </span><span class="n">col2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">annual_growth_habit</span><span class="w">  </span><span class="o">==</span><span class="w"> </span><span class="s2">"winter"</span><span class="p">,</span><span class="w"> </span><span class="n">col2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"red"</span><span class="p">]</span><span class="w">
+
+</span><span class="n">pdf</span><span class="p">(</span><span class="s2">"PCA2.pdf"</span><span class="p">)</span><span class="w">
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col2</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">)]</span><span class="w">
+</span><span class="n">dev.off</span><span class="p">()</span><span class="w">
+</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Read the passport data for the core200 panel and merge them the PCA results.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="r"><span class="n">data.table</span><span class="p">(</span><span class="n">read.xlsx</span><span class="p">(</span><span class="s2">"/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx"</span><span class="p">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pp</span><span class="w">
+</span><span class="n">pp</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span><span class="w"> </span><span class="n">on</span><span class="o">=</span><span class="s2">"accession"</span><span class="p">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ev</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Read the passport data for the core200 panel and merge them the PCA results.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="r"><span class="n">data.table</span><span class="p">(</span><span class="n">read.xlsx</span><span class="p">(</span><span class="s2">"/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx"</span><span class="p">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pp</span><span class="w">
+</span><span class="n">pp</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span><span class="w"> </span><span class="n">on</span><span class="o">=</span><span class="s2">"accession"</span><span class="p">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ev</span></code></pre>
+</div>
+</div>
+</li>
 </ol>
 </div>
 </div>
@@ -1242,7 +1310,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-01-25 07:18:24 +0100
+Last updated 2024-01-25 09:27:17 +0100
 </div>
 </div>
 </body>
