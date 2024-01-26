@@ -373,18 +373,43 @@ dev.off()
 
 ----
 
-. Read the passport data for the core200 panel and merge them the PCA results.
+. Map the countries to continents.
 +
 [source,r]
 ----
-data.table(read.xlsx("/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx")) -> pp
-pp[ev, on="accession"] -> ev
+ev[, countrycode(country_of_origin, "iso3c", "continent")] // <1>
+ev[country_of_origin %in% c("DEU", "DDR", "GER"), country_of_origin := "DEU"] 
+ev[country_of_origin == "SUN", country_of_origin := "RUS"]
+ev[country_of_origin == "CSK", country_of_origin := "CZE"]
+
+ev[, continent := countrycode(country_of_origin, "iso3c", "continent")] 
+ev[is.na(continent)] // <2>
 ----
-. Read the passport data for the core200 panel and merge them the PCA results.
+<1> Some country code are invaled. Correct these.
+<2> Check for missing data.
+
+. Color according to country and plot the PCA again.
 +
 [source,r]
 ----
-data.table(read.xlsx("/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx")) -> pp
-pp[ev, on="accession"] -> ev
+ev[, col3 := "gray"]
+ev[continent == "Europe", col3 := "black"]
+ev[continent == "Asia", col3 := "red"]
+ev[continent == "Africa", col3 := "blue"]
+ev[continent == "Americas", col3 := "green"]
+
+pdf("PCA3.pdf")
+ev[, plot(PC1, PC2, col=col3, pch=19, xlab="PC1", ylab="PC2")]
+dev.off()
 ----
+
+. Add a title and change the orientation of the y-axis labels.
++
+[source,r]
+----
+pdf("PCA4.cpdf")
+ev[, plot(PC1, PC2, col=col3, xlab="PC1", ylab="PC2", las=1, main="PCA colored by geography")] // <1>
+dev.off()
+----
+<1> `las=1` means "always horizontal".
 

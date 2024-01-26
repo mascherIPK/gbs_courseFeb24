@@ -1286,21 +1286,64 @@ R</code></pre>
 </div>
 </li>
 <li>
-<p>Read the passport data for the core200 panel and merge them the PCA results.</p>
+<p>Map the countries to continents.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="r"><span class="n">data.table</span><span class="p">(</span><span class="n">read.xlsx</span><span class="p">(</span><span class="s2">"/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx"</span><span class="p">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pp</span><span class="w">
-</span><span class="n">pp</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span><span class="w"> </span><span class="n">on</span><span class="o">=</span><span class="s2">"accession"</span><span class="p">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ev</span></code></pre>
+<pre class="rouge highlight"><code data-lang="r"><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">countrycode</span><span class="p">(</span><span class="n">country_of_origin</span><span class="p">,</span><span class="w"> </span><span class="s2">"iso3c"</span><span class="p">,</span><span class="w"> </span><span class="s2">"continent"</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="n">ev</span><span class="p">[</span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"DEU"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DDR"</span><span class="p">,</span><span class="w"> </span><span class="s2">"GER"</span><span class="p">),</span><span class="w"> </span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"DEU"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"SUN"</span><span class="p">,</span><span class="w"> </span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"RUS"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"CSK"</span><span class="p">,</span><span class="w"> </span><span class="n">country_of_origin</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"CZE"</span><span class="p">]</span><span class="w">
+
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">continent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">countrycode</span><span class="p">(</span><span class="n">country_of_origin</span><span class="p">,</span><span class="w"> </span><span class="s2">"iso3c"</span><span class="p">,</span><span class="w"> </span><span class="s2">"continent"</span><span class="p">)]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">continent</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="2"></i><b>(2)</b>
+</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Some country code are invaled. Correct these.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Check for missing data.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Color according to country and plot the PCA again.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="r"><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">col3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"gray"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">continent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Europe"</span><span class="p">,</span><span class="w"> </span><span class="n">col3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">continent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Asia"</span><span class="p">,</span><span class="w"> </span><span class="n">col3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"red"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">continent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Africa"</span><span class="p">,</span><span class="w"> </span><span class="n">col3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"blue"</span><span class="p">]</span><span class="w">
+</span><span class="n">ev</span><span class="p">[</span><span class="n">continent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Americas"</span><span class="p">,</span><span class="w"> </span><span class="n">col3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"green"</span><span class="p">]</span><span class="w">
+
+</span><span class="n">pdf</span><span class="p">(</span><span class="s2">"PCA3.pdf"</span><span class="p">)</span><span class="w">
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col3</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">)]</span><span class="w">
+</span><span class="n">dev.off</span><span class="p">()</span></code></pre>
 </div>
 </div>
 </li>
 <li>
-<p>Read the passport data for the core200 panel and merge them the PCA results.</p>
+<p>Add a title and change the orientation of the y-axis labels.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="r"><span class="n">data.table</span><span class="p">(</span><span class="n">read.xlsx</span><span class="p">(</span><span class="s2">"/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/core200_passport_data.xlsx"</span><span class="p">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">pp</span><span class="w">
-</span><span class="n">pp</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span><span class="w"> </span><span class="n">on</span><span class="o">=</span><span class="s2">"accession"</span><span class="p">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ev</span></code></pre>
+<pre class="rouge highlight"><code data-lang="r"><span class="n">pdf</span><span class="p">(</span><span class="s2">"PCA4.cpdf"</span><span class="p">)</span><span class="w">
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col3</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s2">"PCA colored by geography"</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="n">dev.off</span><span class="p">()</span></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>las=1</code> means "always horizontal".</td>
+</tr>
+</table>
 </div>
 </li>
 </ol>
@@ -1310,7 +1353,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-01-25 09:27:17 +0100
+Last updated 2024-01-26 08:35:22 +0100
 </div>
 </div>
 </body>
