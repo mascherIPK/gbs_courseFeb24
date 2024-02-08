@@ -18,7 +18,7 @@
 image::https://bitbucket.org/tritexassembly/tritexassembly.bitbucket.io/raw/9375957ff5f1763b1ce11d090919a76de9d7bf7a/tritex_overview.jpg[]
 ////
 
-image::GBStutorial_flowchart.jpeg[scaledwidth="75%", align=center]
+image::2024_GBStutorial_flowchart.jpeg[scaledwidth="75%", align=center]
 
 == Open a UNIX shell
 
@@ -301,7 +301,7 @@ library(countrycode) // <4>
 ----
 <1> Set the paths where the R libraries are located.
 <2> https://cran.r-project.org/web/packages/data.table/index.html[data.table] extends R core functionality when handling large tables
-<3> Shttps://academic.oup.com/bioinformatics/article/33/15/2251/3072873[seqArray] and https://academic.oup.com/bioinformatics/article/28/24/3326/245844[SNPRelate] are two R packages to store and analyze SNP matrices.
+<3> https://academic.oup.com/bioinformatics/article/33/15/2251/3072873[seqArray] and https://academic.oup.com/bioinformatics/article/28/24/3326/245844[SNPRelate] are two R packages to store and analyze SNP matrices.
 <4> The countrycode package will be used to make country abbreviations to geographic regions.
 
 . Convert the VCF file to the binary GDS (Genomic Data Structure) format used by seqArray and SNPRelate.
@@ -320,7 +320,7 @@ seqOpen('bcftools_SNP_calling_filtered.gds') -> gds
 seqSummary(gds)
 ----
 
-. Run the a principal components analysis (PCA) on the data and extract the eigenvectors.
+. Run a principal components analysis (PCA) on the data and extract the eigenvectors.
 +
 [source,r]
 ----
@@ -330,11 +330,11 @@ data.table(pca$sample.id, pca$eigenvect[, 1:2]) -> ev
 setnames(ev, c("accession", "PC1", "PC2")) // <2>
 ev[, accession := sub(".bam$", "", sub(".*/", "", accession))] // <3>
 ----
-<1> `autosome.only-F` is needed because chromsomes are named chr1H, chr2H ... instead of 1, 2, ...
+<1> `autosome.only=F` is needed because chromsomes are named chr1H, chr2H ... instead of 1, 2, ...
 <2> Set proper column names.
 <3> Change the sample names inherited from the VCF file (BAM file names).
 
-. Read the passport data for the core200 panel and merge them the PCA results.
+. Read the passport data for the core200 panel and merge them with the PCA results.
 +
 [source,r]
 ----
@@ -407,7 +407,7 @@ dev.off()
 +
 [source,r]
 ----
-pdf("PCA4.cpdf")
+pdf("PCA4.pdf")
 ev[, plot(PC1, PC2, col=col3, xlab="PC1", ylab="PC2", las=1, main="PCA colored by geography")] // <1>
 dev.off()
 ----
