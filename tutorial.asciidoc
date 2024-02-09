@@ -412,4 +412,3 @@ ev[, plot(PC1, PC2, col=col3, xlab="PC1", ylab="PC2", las=1, main="PCA colored b
 dev.off()
 ----
 <1> `las=1` means "always horizontal".
-
