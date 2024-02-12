@@ -325,7 +325,7 @@ library(countrycode) // <4>
 +
 [source,r]
 ----
-seqVCF2GDS(vcf.fn='bcftools_SNP_calling_filtered.vcf', out.fn='bcftools_SNP_calling_filtered.gds') // <1>
+seqVCF2GDS(vcf.fn='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling_filtered.vcf', out.fn='bcftools_SNP_calling_filtered.gds') // <1>
 ----
 <1> This creates the GDS file in the current working directory.
 
