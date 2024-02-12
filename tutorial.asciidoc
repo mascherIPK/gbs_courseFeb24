@@ -134,16 +134,6 @@ module load bwa samtools
 module list
 ----
 
-. Load the BWA index into shared memory. This step can be skipped, but pre-loadeding the index makes mapping a lot faster.
-+
-[source,sh]
-----
-ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta' // <1>
-bwa shm $ref
-bwa shm -l
-----
-<1> We use the https://academic.oup.com/plcell/article/33/6/1888/6169005[MorexV3] reference genome sequence.
-
 . We will first run a toy example with 10,000 reads of the Morex sample.
 +
 [source,sh]
@@ -186,14 +176,15 @@ tmux attach -t mapping
 +
 [source,sh]
 ----
-ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'
+ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta' // <1>
 for i in gbs_reads/*fastq.gz; do
- name=`echo $i | cut -d . -f 1` // <1>
- bwa mem -t 4 $ref $i | samtools sort > $name.bam
-done 2> bwa.err <2>
+ name=`echo $i | cut -d . -f 1` // <2>
+ bwa mem -t 12 $ref $i | samtools sort > $name.bam
+done 2> bwa.err <3>
 ----
-<1> Strip the extension: HOR_337.fastq.gz become HOR_337.
-<2> To detach the tmux session, press kbd:[Ctrl-B] followed by kbd:[D]. 
+<1> We use the https://academic.oup.com/plcell/article/33/6/1888/6169005[MorexV3] reference genome sequence.
+<2> Strip the extension: HOR_337.fastq.gz become HOR_337.
+<3> To detach the tmux session, press kbd:[Ctrl-B] followed by kbd:[D]. 
 
 +
 IMPORTANT: If you forget to start bwa inside a tmux session, there is no way to prevent your job from aborting when you shutdown your laptop. Also without k5reauth programs cannot access filer resource after a maximum of ten hours.
@@ -429,3 +420,14 @@ ev[, plot(PC1, PC2, col=col3, xlab="PC1", ylab="PC2", las=1, main="PCA colored b
 dev.off()
 ----
 <1> `las=1` means "always horizontal".
+
+//. Load the BWA index into shared memory. This step can be skipped, but pre-loadeding the index makes mapping a lot faster.
+//+
+//source,sh]
+//----
+//ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta' // <1>
+//bwa shm $ref
+//bwa shm -l
+//----
+
+

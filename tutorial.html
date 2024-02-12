@@ -863,24 +863,6 @@ module list</code></pre>
 </div>
 </li>
 <li>
-<p>Load the BWA index into shared memory. This step can be skipped, but pre-loadeding the index makes mapping a lot faster.</p>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span> <i class="conum" data-value="1"></i><b>(1)</b>
-bwa shm <span class="nv">$ref</span>
-bwa shm <span class="nt">-l</span></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>We use the <a href="https://academic.oup.com/plcell/article/33/6/1888/6169005">MorexV3</a> reference genome sequence.</td>
-</tr>
-</table>
-</div>
-</li>
-<li>
 <p>We will first run a toy example with 10,000 reads of the Morex sample.</p>
 <div class="listingblock">
 <div class="content">
@@ -940,21 +922,25 @@ tmux <span class="nb">ls
 <p>Map all samples.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span>
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span> <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="k">for </span>i <span class="k">in </span>gbs_reads/<span class="k">*</span>fastq.gz<span class="p">;</span> <span class="k">do
- </span><span class="nv">name</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$i</span> | <span class="nb">cut</span> <span class="nt">-d</span> <span class="nb">.</span> <span class="nt">-f</span> 1<span class="sb">`</span> <i class="conum" data-value="1"></i><b>(1)</b>
- bwa mem <span class="nt">-t</span> 4 <span class="nv">$ref</span> <span class="nv">$i</span> | samtools <span class="nb">sort</span> <span class="o">&gt;</span> <span class="nv">$name</span>.bam
-<span class="k">done </span>2&gt; bwa.err <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+ </span><span class="nv">name</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$i</span> | <span class="nb">cut</span> <span class="nt">-d</span> <span class="nb">.</span> <span class="nt">-f</span> 1<span class="sb">`</span> <i class="conum" data-value="2"></i><b>(2)</b>
+ bwa mem <span class="nt">-t</span> 12 <span class="nv">$ref</span> <span class="nv">$i</span> | samtools <span class="nb">sort</span> <span class="o">&gt;</span> <span class="nv">$name</span>.bam
+<span class="k">done </span>2&gt; bwa.err <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Strip the extension: HOR_337.fastq.gz become HOR_337.</td>
+<td>We use the <a href="https://academic.oup.com/plcell/article/33/6/1888/6169005">MorexV3</a> reference genome sequence.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Strip the extension: HOR_337.fastq.gz become HOR_337.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>To detach the tmux session, press <kbd>Ctrl-B</kbd> followed by <kbd>D</kbd>.</td>
 </tr>
 </table>
@@ -1374,7 +1360,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-12 09:22:52 +0100
+Last updated 2024-02-12 10:59:39 +0100
 </div>
 </div>
 </body>
