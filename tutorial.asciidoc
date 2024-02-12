@@ -22,7 +22,7 @@ image::2024_GBStutorial_flowchart.jpeg[scaledwidth="75%", align=center]
 
 == Open a UNIX shell
 
-. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server [red]#slurm-01.ipk-gatersleben.de#.
+. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server slurm-14.ipk-gatersleben.de#.
 
 . Obtain a Kerberos ticket to access our filer resources.
 +
@@ -64,6 +64,16 @@ du -ch gbs_reads
 <1> To close `less`, press `q`.
 <2> The reads are in https://en.wikipedia.org/wiki/FASTQ_format[FASTQ format].
 
+. Have a look at the passport data.
++
+[source,sh]
+----
+less core200_passport_data.tsv
+column -t core200_passport_data.tsv | less -S
+----
+
+. Use WinSCP to copy the XLSX file with the passport data to your local computer.
+
 . Create your working directory and change into it.
 +
 [source,sh]
@@ -88,18 +98,28 @@ ls gbs_reads | wc -l
 ----
 <1> Check that you are in your working directory (`/filer/projekte/gbs_course/USER/gbs`).
 
-. Count the reads. We use a for-loop to process all samples at once.
+. Count the reads in one FASTQ file.
 +
 [source,r]
 ----
 zcat gbs_reads/HOR_337.fastq.gz | wc -l > HOR_337.len.txt
+----
 
+. We use a https://en.wikipedia.org/wiki/For_loop[for-loop] to get the read counts of all samples in one go.
++
+[source,r]
+----
 for i in gbs_reads/*fastq.gz; do
  name=`basename $i | cut -d . -f 1`
  count=`zcat $i | wc -l`
  echo $name $count
 done > fastq_line_counts.txt
+----
 
+. Add column with read count (as opposed to the line count).
++
+[source,r]
+----
 cat fastq_line_counts.txt | awk '{print $1,$2/4}' | sort -nk 2 > fastq_read_counts.txt // <1>
 ----
 <1> We use https://www.tutorialspoint.com/awk/index.htm[AWK] to divide the second column by 4. 
@@ -239,9 +259,7 @@ module load bcftools
 [source,sh]
 ----
 ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'
-#bamlist='bam_list.txt' 
-bamlist='/filer-dg/agruppen/dg6/mascher/DG/mxb_course_221201/try_221216/bam_list_Martin.txt' <1>
-
+bamlist='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bam_list.txt' // <1>
 vcf='bcftools_SNP_calling.vcf' // <2>
 
 bcftools mpileup --skip-indels --fasta-ref $ref --bam-list $bamlist --min-MQ 20 --annotate AD \#<3>
@@ -259,8 +277,7 @@ bcftools mpileup --skip-indels --fasta-ref $ref --bam-list $bamlist --min-MQ 20 
 [source, sh]
 ----
 filter='/filer/projekte/gbs_course/scripts/filter_vcf.zsh'
-#vcf='bcftools_SNP_calling.vcf'
-vcf='/filer-dg/agruppen/dg6/mascher/DG/mxb_course_221201/try_221216/bcftools_SNP_calling.vcf' <1>
+vcf='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling_filtered.vcf' <1>
 fvcf='bcftools_SNP_calling_filtered.vcf'
 
 $filter --vcf $vcf --dphom 2 --dphet 4 --minmaf 0.2 --minpresent 0.9 --minhomp 0.9 > $fvcf // <2>
@@ -300,7 +317,7 @@ library(countrycode) // <4>
 
 ----
 <1> Set the paths where the R libraries are located.
-<2> https://cran.r-project.org/web/packages/data.table/index.html[data.table] extends R core functionality when handling large tables
+<2> https://cran.r-project.org/web/packages/data.table/index.html[data.table] extends R core functionality when handling large tables.
 <3> https://academic.oup.com/bioinformatics/article/33/15/2251/3072873[seqArray] and https://academic.oup.com/bioinformatics/article/28/24/3326/245844[SNPRelate] are two R packages to store and analyze SNP matrices.
 <4> The countrycode package will be used to make country abbreviations to geographic regions.
 
