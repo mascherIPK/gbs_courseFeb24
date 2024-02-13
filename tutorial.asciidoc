@@ -304,7 +304,7 @@ module load R/3.5.1
 R 
 ----
 
-. R is a widely used programming language in data science. There are very many tutorials, e.g. https://www.statmethods.net/r-tutorial/index.html[this one].
+. R is a widely used programming language in data science. There are many tutorials, e.g. https://www.statmethods.net/r-tutorial/index.html[this one].
 
 . Load the required libraries.
 +
@@ -397,14 +397,14 @@ dev.off()
 [source,r]
 ----
 ev[, countrycode(country_of_origin, "iso3c", "continent")] // <1>
-ev[country_of_origin %in% c("DEU", "DDR", "GER"), country_of_origin := "DEU"] 
+ev[country_of_origin %in% c("DDR", "GER"), country_of_origin := "DEU"] 
 ev[country_of_origin == "SUN", country_of_origin := "RUS"]
 ev[country_of_origin == "CSK", country_of_origin := "CZE"]
 
 ev[, continent := countrycode(country_of_origin, "iso3c", "continent")] 
 ev[is.na(continent)] // <2>
 ----
-<1> Some country code are invaled. Correct these.
+<1> Some country code are invalid. Correct these.
 <2> Check for missing data.
 
 . Color according to country and plot the PCA again.
