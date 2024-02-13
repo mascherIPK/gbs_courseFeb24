@@ -206,7 +206,14 @@ top -u mascher <1>
 ls gbs_reads/*bam | wc -l
 ----
 
-. Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare it to the read count of that sample.
+. If you have fewer than 200 files and the mapping didn't work for some reason, use the pre-computed files.
++
+[source,sh]
+----
+ln -fst gbs_reads /filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/bam_files/*bam
+----
+
+. Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare the result to the input read count of that sample.
 +
 [source,sh]
 ----

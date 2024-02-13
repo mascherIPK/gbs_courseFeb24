@@ -985,7 +985,15 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 </div>
 </li>
 <li>
-<p>Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare it to the read count of that sample.</p>
+<p>If you have fewer than 200 files and the mapping didn&#8217;t work for some reason, use the pre-computed files.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ln</span> <span class="nt">-fst</span> gbs_reads /filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/bam_files/<span class="k">*</span>bam</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare the result to the input read count of that sample.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq</span> 20
@@ -1364,7 +1372,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-13 07:27:53 +0100
+Last updated 2024-02-13 08:40:07 +0100
 </div>
 </div>
 </body>
