@@ -134,16 +134,19 @@ module load bwa samtools
 module list
 ----
 
-. We will first run a toy example with 10,000 reads of the Morex sample.
+. We will first run a toy example with 10,000 reads of the HOR 337 sample.
 +
 [source,sh]
 ----
 zcat gbs_reads/HOR_337.fastq.gz | head -n 40000 > HOR_337_10k.fastq
-bwa mem $ref HOR_337_10k.fastq > HOR_337_10k.sam <1>
-samtools sort HOR_337_10k.sam > HOR_337_10k.bam <1>
+
+ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta' // <1>
+bwa mem $ref HOR_337_10k.fastq > HOR_337_10k.sam <2>
+samtools sort HOR_337_10k.sam > HOR_337_10k.bam <2>
 samtools view HOR_337_10k.bam | less -S
 ----
-<1> Alignments are stored in the https://en.wikipedia.org/wiki/SAM_(file_format)[Sequence Alignment Map format] (SAM) or its binary equivalent BAM.
+<1> We use the https://academic.oup.com/plcell/article/33/6/1888/6169005[MorexV3] reference genome sequence.
+<2> Alignments are stored in the https://en.wikipedia.org/wiki/SAM_(file_format)[Sequence Alignment Map format] (SAM) or its binary equivalent BAM.
 
 . Combine mapping and sorting into one command.
 +
@@ -176,15 +179,14 @@ tmux attach -t mapping
 +
 [source,sh]
 ----
-ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta' // <1>
+ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'
 for i in gbs_reads/*fastq.gz; do
- name=`echo $i | cut -d . -f 1` // <2>
+ name=`echo $i | cut -d . -f 1` // <1>
  bwa mem -t 12 $ref $i | samtools sort > $name.bam
-done 2> bwa.err <3>
+done 2> bwa.err <2>
 ----
-<1> We use the https://academic.oup.com/plcell/article/33/6/1888/6169005[MorexV3] reference genome sequence.
-<2> Strip the extension: HOR_337.fastq.gz become HOR_337.
-<3> To detach the tmux session, press kbd:[Ctrl-B] followed by kbd:[D]. 
+<1> Strip the extension: HOR_337.fastq.gz become HOR_337.
+<2> To detach the tmux session, press kbd:[Ctrl-B] followed by kbd:[D]. 
 
 +
 IMPORTANT: If you forget to start bwa inside a tmux session, there is no way to prevent your job from aborting when you shutdown your laptop. Also without k5reauth programs cannot access filer resource after a maximum of ten hours.
@@ -193,13 +195,26 @@ IMPORTANT: If you forget to start bwa inside a tmux session, there is no way to 
 +
 [source,sh]
 ----
-find gbs_reads | grep -c 'bam$' <1>
-top -u mascher // <2>
+top -u mascher <1>
 ----
-<1> Show the number of BAM files created so far.
-<2> Replace mascher with your username.
+<1> Replace mascher with your username.
 
-. When the mapping is done, calculate the mapping rates for all samples.
+. Once the mapping is finished, count the number of BAM files.
++
+[source,sh]
+----
+ls gbs_reads | grep -c 'bam$'
+----
+
+. Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare it to the read count of that sample.
++
+[source,sh]
+----
+samtools view -cq 20 
+grep HOR_337 fastq_read_counts.txt
+----
+
+. Calculate the mapping rates (i.e. proportion of mapped reads) for all samples.
 +
 [source,sh]
 ----
@@ -226,13 +241,6 @@ column -t mapping_stats.txt  | less -S
 <1> To combine two lists with https://linux.die.net/man/1/join[join], both lists need to be sorted on the common ID column.
 <2> https://linux.die.net/man/1/column[column] is used to align columns.
 
-. Get a list of all BAM files.
-+
-[source,sh]
-----
-ls gbs_reads/*bam | sort > bam_list.txt
-----
-
 == Variant calling and filtration ==
 
 . Open a new tmux session and load https://samtools.github.io/bcftools/howtos/index.html[bcftools].
@@ -244,6 +252,13 @@ tmux rename variant_call
 module load bcftools
 ----
 <1> The variant calling will run for some time, so run it inside `tmux`.
+
+. Get a list of all BAM files.
++
+[source,sh]
+----
+ls gbs_reads/*bam | sort > bam_list.txt
+----
 
 . Run the variant calling.
 +

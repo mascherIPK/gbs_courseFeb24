@@ -863,12 +863,14 @@ module list</code></pre>
 </div>
 </li>
 <li>
-<p>We will first run a toy example with 10,000 reads of the Morex sample.</p>
+<p>We will first run a toy example with 10,000 reads of the HOR 337 sample.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh">zcat gbs_reads/HOR_337.fastq.gz | <span class="nb">head</span> <span class="nt">-n</span> 40000 <span class="o">&gt;</span> HOR_337_10k.fastq
-bwa mem <span class="nv">$ref</span> HOR_337_10k.fastq <span class="o">&gt;</span> HOR_337_10k.sam <i class="conum" data-value="1"></i><b>(1)</b>
-samtools <span class="nb">sort </span>HOR_337_10k.sam <span class="o">&gt;</span> HOR_337_10k.bam <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span> <i class="conum" data-value="1"></i><b>(1)</b>
+bwa mem <span class="nv">$ref</span> HOR_337_10k.fastq <span class="o">&gt;</span> HOR_337_10k.sam <i class="conum" data-value="2"></i><b>(2)</b>
+samtools <span class="nb">sort </span>HOR_337_10k.sam <span class="o">&gt;</span> HOR_337_10k.bam <i class="conum" data-value="2"></i><b>(2)</b>
 samtools view HOR_337_10k.bam | less <span class="nt">-S</span></code></pre>
 </div>
 </div>
@@ -876,6 +878,10 @@ samtools view HOR_337_10k.bam | less <span class="nt">-S</span></code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We use the <a href="https://academic.oup.com/plcell/article/33/6/1888/6169005">MorexV3</a> reference genome sequence.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Alignments are stored in the <a href="https://en.wikipedia.org/wiki/SAM_(file_format)">Sequence Alignment Map format</a> (SAM) or its binary equivalent BAM.</td>
 </tr>
 </table>
@@ -922,25 +928,21 @@ tmux <span class="nb">ls
 <p>Map all samples.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">ref</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.fasta'</span>
 <span class="k">for </span>i <span class="k">in </span>gbs_reads/<span class="k">*</span>fastq.gz<span class="p">;</span> <span class="k">do
- </span><span class="nv">name</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$i</span> | <span class="nb">cut</span> <span class="nt">-d</span> <span class="nb">.</span> <span class="nt">-f</span> 1<span class="sb">`</span> <i class="conum" data-value="2"></i><b>(2)</b>
+ </span><span class="nv">name</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$i</span> | <span class="nb">cut</span> <span class="nt">-d</span> <span class="nb">.</span> <span class="nt">-f</span> 1<span class="sb">`</span> <i class="conum" data-value="1"></i><b>(1)</b>
  bwa mem <span class="nt">-t</span> 12 <span class="nv">$ref</span> <span class="nv">$i</span> | samtools <span class="nb">sort</span> <span class="o">&gt;</span> <span class="nv">$name</span>.bam
-<span class="k">done </span>2&gt; bwa.err <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+<span class="k">done </span>2&gt; bwa.err <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>We use the <a href="https://academic.oup.com/plcell/article/33/6/1888/6169005">MorexV3</a> reference genome sequence.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Strip the extension: HOR_337.fastq.gz become HOR_337.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>To detach the tmux session, press <kbd>Ctrl-B</kbd> followed by <kbd>D</kbd>.</td>
 </tr>
 </table>
@@ -962,25 +964,37 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 <p>Open a new terminal. Look at your jobs in the table of processes (<code>top</code>).</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh">find gbs_reads | <span class="nb">grep</span> <span class="nt">-c</span> <span class="s1">'bam$'</span> <i class="conum" data-value="1"></i><b>(1)</b>
-top <span class="nt">-u</span> mascher <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="sh">top <span class="nt">-u</span> mascher <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Show the number of BAM files created so far.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Replace mascher with your username.</td>
 </tr>
 </table>
 </div>
 </li>
 <li>
-<p>When the mapping is done, calculate the mapping rates for all samples.</p>
+<p>Once the mapping is finished, count the number of BAM files.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads | <span class="nb">grep</span> <span class="nt">-c</span> <span class="s1">'bam$'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare it to the read count of that sample.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq</span> 20
+<span class="nb">grep </span>HOR_337 fastq_read_counts.txt</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Calculate the mapping rates (i.e. proportion of mapped reads) for all samples.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh"><span class="k">for </span>i <span class="k">in </span>gbs_reads/<span class="k">*</span>bam<span class="p">;</span> <span class="k">do
@@ -1018,14 +1032,6 @@ column <span class="nt">-t</span> mapping_stats.txt  | less <span class="nt">-S<
 </table>
 </div>
 </li>
-<li>
-<p>Get a list of all BAM files.</p>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads/<span class="k">*</span>bam | <span class="nb">sort</span> <span class="o">&gt;</span> bam_list.txt</code></pre>
-</div>
-</div>
-</li>
 </ol>
 </div>
 </div>
@@ -1051,6 +1057,14 @@ module load bcftools</code></pre>
 <td>The variant calling will run for some time, so run it inside <code>tmux</code>.</td>
 </tr>
 </table>
+</div>
+</li>
+<li>
+<p>Get a list of all BAM files.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads/<span class="k">*</span>bam | <span class="nb">sort</span> <span class="o">&gt;</span> bam_list.txt</code></pre>
+</div>
 </div>
 </li>
 <li>
@@ -1360,7 +1374,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-12 10:59:39 +0100
+Last updated 2024-02-13 07:18:18 +0100
 </div>
 </div>
 </body>
