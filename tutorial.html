@@ -994,7 +994,7 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 </div>
 </li>
 <li>
-<p>Calculate the mapping rates (i.e. proportion of mapped reads) for all samples.</p>
+<p>Get mapped read counts for all samples.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh"><span class="k">for </span>i <span class="k">in </span>gbs_reads/<span class="k">*</span>bam<span class="p">;</span> <span class="k">do
@@ -1075,9 +1075,7 @@ module load bcftools</code></pre>
 <span class="nv">bamlist</span><span class="o">=</span><span class="s1">'/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bam_list.txt'</span> <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="nv">vcf</span><span class="o">=</span><span class="s1">'bcftools_SNP_calling.vcf'</span> <i class="conum" data-value="2"></i><b>(2)</b>
 
-bcftools mpileup <span class="nt">--skip-indels</span> <span class="nt">--fasta-ref</span> <span class="nv">$ref</span> <span class="nt">--bam-list</span> <span class="nv">$bamlist</span> <span class="nt">--min-MQ</span> 20 <span class="nt">--annotate</span> AD <span class="se">\</span><i class="conum" data-value="3"></i><b>(3)</b>
- | bcftools view <span class="nt">-i</span> <span class="s1">'INFO/DP &gt; 100'</span> <span class="se">\</span><i class="conum" data-value="4"></i><b>(4)</b> <i class="conum" data-value="5"></i><b>(5)</b>
- | bcftools call <span class="nt">--consensus-caller</span> <span class="nt">--variants-only</span> <span class="nt">--output</span> <span class="nv">$vcf</span></code></pre>
+bcftools mpileup <span class="nt">--bam-list</span> <span class="nv">$bamlist</span> <span class="nt">--skip-indels</span> <span class="nt">--fasta-ref</span> <span class="nv">$ref</span> <span class="nt">--min-MQ</span> 20 <span class="nt">--annotate</span> AD | bcftools call <span class="nt">--consensus-caller</span> <span class="nt">--variants-only</span> <span class="nt">--output</span> <span class="nv">$vcf</span> <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1093,14 +1091,6 @@ bcftools mpileup <span class="nt">--skip-indels</span> <span class="nt">--fasta-
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>We ignore insertions and deletions (<code>--skip-indels</code>), consider only SNPs with a quality score no smaller than 20 (<code>--min-MQ 20</code>) and add allelic depth information (<code>--annotate AD</code>) for all genotype calls.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Remove sites with fewer than 100 reads across all samples. We are only interested in sites that have at least two supporting reads in nine tenths of the samples.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>The backslash \ character is used to split long commands across multiple lines.  When pasting the commands or editing them, make sure that no white space follows the backslash.  Otherwise, the shell will interpret the lines as belonging to different commands. Also multi-line commands do not tolerate intervening command line (starting the hash sign #).</td>
 </tr>
 </table>
 </div>
@@ -1124,7 +1114,7 @@ bcftools mpileup <span class="nt">--skip-indels</span> <span class="nt">--fasta-
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozyous calls are discarded.</td>
+<td>We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozygous calls are discarded.</td>
 </tr>
 </table>
 </div>
@@ -1374,7 +1364,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-13 07:19:04 +0100
+Last updated 2024-02-13 07:25:17 +0100
 </div>
 </div>
 </body>

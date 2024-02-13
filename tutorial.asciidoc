@@ -214,7 +214,7 @@ samtools view -cq 20
 grep HOR_337 fastq_read_counts.txt
 ----
 
-. Calculate the mapping rates (i.e. proportion of mapped reads) for all samples.
+. Get mapped read counts for all samples.
 +
 [source,sh]
 ----
@@ -268,15 +268,11 @@ ref='/filer/projekte/gbs_course/data/reference/Hordeum_vulgare_MorexV3_assembly.
 bamlist='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bam_list.txt' // <1>
 vcf='bcftools_SNP_calling.vcf' // <2>
 
-bcftools mpileup --skip-indels --fasta-ref $ref --bam-list $bamlist --min-MQ 20 --annotate AD \#<3>
- | bcftools view -i 'INFO/DP > 100' \#<4><5>
- | bcftools call --consensus-caller --variants-only --output $vcf
+bcftools mpileup --bam-list $bamlist --skip-indels --fasta-ref $ref --min-MQ 20 --annotate AD | bcftools call --consensus-caller --variants-only --output $vcf // <3>
 ----
 <1> List of pre-computed BAM files.
 <2> Output file in https://en.wikipedia.org/wiki/Variant_Call_Format[variant call format] (VCF). https://samtools.github.io/hts-specs/VCFv4.2.pdf[Here] are the specifications of the VCF format.
 <3> We ignore insertions and deletions (`--skip-indels`), consider only SNPs with a quality score no smaller than 20 (`--min-MQ 20`) and add allelic depth information (`--annotate AD`) for all genotype calls.
-<4> Remove sites with fewer than 100 reads across all samples. We are only interested in sites that have at least two supporting reads in nine tenths of the samples.
-<5> The backslash \ character is used to split long commands across multiple lines.  When pasting the commands or editing them, make sure that no white space follows the backslash.  Otherwise, the shell will interpret the lines as belonging to different commands. Also multi-line commands do not tolerate intervening command line (starting the hash sign #).
 
 . Filter the variant calls.
 +
@@ -289,7 +285,7 @@ fvcf='bcftools_SNP_calling_filtered.vcf'
 $filter --vcf $vcf --dphom 2 --dphet 4 --minmaf 0.2 --minpresent 0.9 --minhomp 0.9 > $fvcf // <2>
 ----
 <1> Path to pre-computed VCF file.
-<2> We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozyous calls are discarded.
+<2> We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozygous calls are discarded.
 
 . Review the VCF file.
 +
