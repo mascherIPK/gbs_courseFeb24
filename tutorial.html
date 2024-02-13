@@ -980,7 +980,7 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 <p>Once the mapping is finished, count the number of BAM files.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads | <span class="nb">grep</span> <span class="nt">-c</span> <span class="s1">'bam$'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads/<span class="k">*</span>bam | <span class="nb">wc</span> <span class="nt">-l</span></code></pre>
 </div>
 </div>
 </li>
@@ -1374,7 +1374,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-13 07:18:18 +0100
+Last updated 2024-02-13 07:19:04 +0100
 </div>
 </div>
 </body>

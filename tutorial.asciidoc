@@ -203,7 +203,7 @@ top -u mascher <1>
 +
 [source,sh]
 ----
-ls gbs_reads | grep -c 'bam$'
+ls gbs_reads/*bam | wc -l
 ----
 
 . Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare it to the read count of that sample.
