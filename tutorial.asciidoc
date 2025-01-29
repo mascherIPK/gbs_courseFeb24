@@ -218,7 +218,7 @@ ln -fst gbs_reads /filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/bam_
 +
 [source,sh]
 ----
-samtools view -cq 20 
+samtools view -cq 20 -cq20 gbs_reads/HOR_337.bam
 grep HOR_337 fastq_read_counts.txt
 ----
 
@@ -287,7 +287,7 @@ bcftools mpileup --bam-list $bamlist --skip-indels --fasta-ref $ref --min-MQ 20 
 [source, sh]
 ----
 filter='/filer/projekte/gbs_course/scripts/filter_vcf.zsh'
-vcf='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling_filtered.vcf' <1>
+vcf='/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling.vcf' <1>
 fvcf='bcftools_SNP_calling_filtered.vcf'
 
 $filter --vcf $vcf --dphom 2 --dphet 4 --minmaf 0.2 --minpresent 0.9 --minhomp 0.9 > $fvcf // <2>
@@ -430,12 +430,13 @@ ev[, plot(PC1, PC2, col=col3, pch=19, xlab="PC1", ylab="PC2")]
 dev.off()
 ----
 
-. Add a title and change the orientation of the y-axis labels.
+. Add a title and legend. Change the orientation of the y-axis labels.
 +
 [source,r]
 ----
 pdf("PCA4.pdf")
-ev[, plot(PC1, PC2, col=col3, xlab="PC1", ylab="PC2", las=1, main="PCA colored by geography")] // <1>
+ev[, plot(PC1, PC2, col=col3, pch=19, xlab="PC1", ylab="PC2", las=1, main="PCA colored by geography")] // <1>
+legend("bottomright", col=c("black", "red", "blue", "green"), pch=19, legend=c("Europe", "Asia", "Africa", "Americas"))
 dev.off()
 ----
 <1> `las=1` means "always horizontal".

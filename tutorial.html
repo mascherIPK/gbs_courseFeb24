@@ -997,7 +997,7 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 <p>Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare the result to the input read count of that sample.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq</span> 20
+<pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq</span> 20 <span class="nt">-cq20</span> gbs_reads/HOR_337.bam
 <span class="nb">grep </span>HOR_337 fastq_read_counts.txt</code></pre>
 </div>
 </div>
@@ -1109,7 +1109,7 @@ bcftools mpileup <span class="nt">--bam-list</span> <span class="nv">$bamlist</s
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="sh"><span class="nv">filter</span><span class="o">=</span><span class="s1">'/filer/projekte/gbs_course/scripts/filter_vcf.zsh'</span>
-<span class="nv">vcf</span><span class="o">=</span><span class="s1">'/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling_filtered.vcf'</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="nv">vcf</span><span class="o">=</span><span class="s1">'/filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/try_231222/bcftools_SNP_calling.vcf'</span> <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="nv">fvcf</span><span class="o">=</span><span class="s1">'bcftools_SNP_calling_filtered.vcf'</span>
 
 <span class="nv">$filter</span> <span class="nt">--vcf</span> <span class="nv">$vcf</span> <span class="nt">--dphom</span> 2 <span class="nt">--dphet</span> 4 <span class="nt">--minmaf</span> 0.2 <span class="nt">--minpresent</span> 0.9 <span class="nt">--minhomp</span> 0.9 <span class="o">&gt;</span> <span class="nv">$fvcf</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
@@ -1349,11 +1349,12 @@ R</code></pre>
 </div>
 </li>
 <li>
-<p>Add a title and change the orientation of the y-axis labels.</p>
+<p>Add a title and legend. Change the orientation of the y-axis labels.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="r"><span class="n">pdf</span><span class="p">(</span><span class="s2">"PCA4.pdf"</span><span class="p">)</span><span class="w">
-</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col3</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s2">"PCA colored by geography"</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="n">ev</span><span class="p">[,</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">col3</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"PC1"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"PC2"</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s2">"PCA colored by geography"</span><span class="p">)]</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="n">legend</span><span class="p">(</span><span class="s2">"bottomright"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="s2">"red"</span><span class="p">,</span><span class="w"> </span><span class="s2">"blue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"green"</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">19</span><span class="p">,</span><span class="w"> </span><span class="n">legend</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Europe"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Asia"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Africa"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Americas"</span><span class="p">))</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span></code></pre>
 </div>
 </div>
@@ -1373,7 +1374,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-23 10:30:21 +0100
+Last updated 2025-01-29 09:07:17 +0100
 </div>
 </div>
 </body>
