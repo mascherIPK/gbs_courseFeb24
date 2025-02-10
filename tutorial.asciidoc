@@ -22,7 +22,7 @@ image::2024_GBStutorial_flowchart.jpeg[scaledwidth="75%", align=center]
 
 == Open a UNIX shell
 
-. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server slurm-14.ipk-gatersleben.de.
+. Connect with https://en.wikipedia.org/wiki/PuTTY[PuTTY] to the server slurm-24.
 
 . Obtain a Kerberos ticket to access our filer resources.
 +
