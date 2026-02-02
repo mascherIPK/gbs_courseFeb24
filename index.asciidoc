@@ -286,10 +286,10 @@ bcftools mpileup --bam-list $bamlist --skip-indels --fasta-ref $ref --min-MQ 20 
 +
 [source, sh]
 ----
-vcf='bcftools_SNP_calling_filtered.vcf'
+vcf='bcftools_SNP_calling.vcf'
 
-head -n 100 bcftools_SNP_calling.vcf | less -S
-grep -v '^##' bcftools_SNP_calling.vcf | head -n 100 | column -t | less -S
+head -n 100 $vcf | less -S
+grep -v '^##' $vcf | head -n 100 | column -t | less -S
 ----
 
 . Filter the variant calls.
@@ -305,11 +305,11 @@ $filter --vcf $vcf --dphom 2 --dphet 4 --minmaf 0.2 --minpresent 0.9 --minhomp 0
 <1> Path to pre-computed VCF file.
 <2> We keep homozygous genotype calls if they have at least two supporting reads; heterozygous calls are accepted if they are supported by no fewer than four reads. SNPs with a minor allele frequency below 20 % or less than 90 % present calls or less than 90 % homozygous calls are discarded.
 
-. Review the VCF file.
+. Review the filtered VCF file.
 +
 [source,sh]
 ----
-grep -v '^##' bcftools_SNP_calling_filtered.vcf | column -t | less -S
+grep -v '^##' bcftools_SNP_calling_filtered.vcf | head -n 100 | column -t | less -S
 ----
 
 == Principal component analysis
