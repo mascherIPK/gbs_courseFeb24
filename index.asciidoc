@@ -340,7 +340,7 @@ library(openxlsx) // <5>
 <1> Set the paths where the R libraries are located.
 <2> https://cran.r-project.org/web/packages/data.table/index.html[data.table] extends R core functionality when handling large tables.
 <3> https://academic.oup.com/bioinformatics/article/33/15/2251/3072873[seqArray] and https://academic.oup.com/bioinformatics/article/28/24/3326/245844[SNPRelate] are two R packages to store and analyze SNP matrices.
-<4> The countrycode package will be used to make country abbreviations to geographic regions.
+<4> The https://cran.r-project.org/web/packages/countrycode/index.html[countrycode] package will be used to make country abbreviations to geographic regions.
 <5> https://cran.r-project.org/web/packages/openxlsx/index.html[openxlsx] is used to read Excel spreadsheet.
 
 . Convert the VCF file to the binary GDS (Genomic Data Structure) format used by seqArray and SNPRelate.
