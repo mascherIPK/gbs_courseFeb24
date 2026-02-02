@@ -1072,7 +1072,7 @@ module load bcftools</code></pre>
 <p>Get a list of all BAM files.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls </span>gbs_reads/<span class="k">*</span>bam | <span class="nb">sort</span> <span class="o">&gt;</span> bam_list.txt</code></pre>
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls</span> <span class="nv">$PWD</span>/gbs_reads/<span class="k">*</span>bam | <span class="nb">sort</span> <span class="o">&gt;</span> bam_list.txt</code></pre>
 </div>
 </div>
 </li>
@@ -1167,6 +1167,7 @@ R</code></pre>
 </span><span class="n">library</span><span class="p">(</span><span class="n">SeqArray</span><span class="p">)</span><span class="w"> <i class="conum" data-value="3"></i><b>(3)</b>
 </span><span class="n">library</span><span class="p">(</span><span class="n">SNPRelate</span><span class="p">)</span><span class="w"> <i class="conum" data-value="3"></i><b>(3)</b>
 </span><span class="n">library</span><span class="p">(</span><span class="n">countrycode</span><span class="p">)</span><span class="w"> <i class="conum" data-value="4"></i><b>(4)</b>
+</span><span class="n">library</span><span class="p">(</span><span class="n">openxlsx</span><span class="p">)</span><span class="w"> <i class="conum" data-value="5"></i><b>(5)</b>
 </span></code></pre>
 </div>
 </div>
@@ -1187,6 +1188,10 @@ R</code></pre>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>The countrycode package will be used to make country abbreviations to geographic regions.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><a href="https://cran.r-project.org/web/packages/openxlsx/index.html">openxlsx</a> is used to read Excel spreadsheet.</td>
 </tr>
 </table>
 </div>
@@ -1374,7 +1379,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-02-10 10:58:04 +0100
+Last updated 2026-02-02 07:41:59 +0100
 </div>
 </div>
 </body>
