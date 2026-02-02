@@ -282,6 +282,16 @@ bcftools mpileup --bam-list $bamlist --skip-indels --fasta-ref $ref --min-MQ 20 
 <2> Output file in https://en.wikipedia.org/wiki/Variant_Call_Format[variant call format] (VCF). https://samtools.github.io/hts-specs/VCFv4.2.pdf[Here] are the specifications of the VCF format.
 <3> We ignore insertions and deletions (`--skip-indels`), consider only SNPs with a quality score no smaller than 20 (`--min-MQ 20`) and add allelic depth information (`--annotate AD`) for all genotype calls.
 
+. Have a look at the VCF file
++
+[source, sh]
+----
+vcf='bcftools_SNP_calling_filtered.vcf'
+
+head -n 100 bcftools_SNP_calling.vcf | less -S
+grep -v '^##' bcftools_SNP_calling.vcf | head -n 100 | column -t | less -S
+----
+
 . Filter the variant calls.
 +
 [source, sh]

@@ -1105,6 +1105,17 @@ bcftools mpileup <span class="nt">--bam-list</span> <span class="nv">$bamlist</s
 </div>
 </li>
 <li>
+<p>Have a look at the VCF file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">vcf</span><span class="o">=</span><span class="s1">'bcftools_SNP_calling_filtered.vcf'</span>
+
+<span class="nb">head</span> <span class="nt">-n</span> 100 bcftools_SNP_calling.vcf | less <span class="nt">-S</span>
+<span class="nb">grep</span> <span class="nt">-v</span> <span class="s1">'^##'</span> bcftools_SNP_calling.vcf | <span class="nb">head</span> <span class="nt">-n</span> 100 | column <span class="nt">-t</span> | less <span class="nt">-S</span></code></pre>
+</div>
+</div>
+</li>
+<li>
 <p>Filter the variant calls.</p>
 <div class="listingblock">
 <div class="content">
@@ -1379,7 +1390,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-02 07:41:59 +0100
+Last updated 2026-02-02 09:42:28 +0100
 </div>
 </div>
 </body>
