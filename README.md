@@ -1,6 +1,6 @@
 # gbs_courseFeb24
-Introduction to GBS data analysis to MSc students from Halle University 
-in February 2024
+Introduction to GBS data analysis to MSc students in crop scioence from 
+Halle University.
 
 [https://mascheripk.github.io/gbs_courseFeb24/](https://mascheripk.github.io/gbs_courseFeb24/).
 
