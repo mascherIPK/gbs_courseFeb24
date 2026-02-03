@@ -997,7 +997,7 @@ If you forget to start bwa inside a tmux session, there is no way to prevent you
 <p>Count the number of mapped reads with a minimum quality score of 20 for the HOR 337 sample and compare the result to the input read count of that sample.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq</span> 20 <span class="nt">-cq20</span> gbs_reads/HOR_337.bam
+<pre class="rouge highlight"><code data-lang="sh">samtools view <span class="nt">-cq20</span> gbs_reads/HOR_337.bam
 <span class="nb">grep </span>HOR_337 fastq_read_counts.txt</code></pre>
 </div>
 </div>
@@ -1390,7 +1390,7 @@ R</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-02 09:48:05 +0100
+Last updated 2026-02-03 08:57:54 +0100
 </div>
 </div>
 </body>

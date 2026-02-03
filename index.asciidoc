@@ -218,7 +218,7 @@ ln -fst gbs_reads /filer-dg/agruppen/dg6/mascher/gbs_course2024_231222/data/bam_
 +
 [source,sh]
 ----
-samtools view -cq 20 -cq20 gbs_reads/HOR_337.bam
+samtools view -cq20 gbs_reads/HOR_337.bam
 grep HOR_337 fastq_read_counts.txt
 ----
 
